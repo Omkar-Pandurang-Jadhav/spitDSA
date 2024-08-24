@@ -11,7 +11,7 @@ struct priorityQueue{
 void insertionSort(struct priorityQueue *pq){
     for(int i=pq->front+1;i<=pq->rear;i++){
         int j=i;
-        while(j>0 && pq->arr[j-1]>pq->arr[j]){
+        while(j>pq->front && pq->arr[j-1]>pq->arr[j]){
             int temp=pq->arr[j-1];
             pq->arr[j-1]=pq->arr[j];
             pq->arr[j]=temp;
