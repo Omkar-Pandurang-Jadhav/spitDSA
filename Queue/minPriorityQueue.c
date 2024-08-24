@@ -96,7 +96,7 @@ int main(){
         }
     } while(n>=1 && n<=3);
 
-    free(arr);
+    free(pq.arr);
 
     return 0;
 }
