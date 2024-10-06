@@ -33,28 +33,42 @@ int max(int a,int b){
     }
 }
 struct Node * leftLeftRotation(struct Node *node){
-    printf("LL Rotation Applied. \n");
+    printf("LL Rotation on %d is Applied. \n",node->key);
     struct Node *n1=(struct Node*)malloc(sizeof(struct Node));
-    struct Node *n2=(struct Node*)malloc(sizeof(struct Node));
     n1=node->left;
-    n2=n1->right;
+    node->left=n1->right;
     n1->right=node;
-    node->left=n2;
-    n1->height=1+max(height(n1->left),height(n1->right));
     node->height=1+max(height(node->left),height(node->right));
+    n1->height=1+max(height(n1->left),height(n1->right));
     
     return n1;
 }
+struct Node * rightRightRotation(struct Node *node){
+    printf("RR Rotation on %d is Applied. \n",node->key);
+    struct Node *n1=(struct Node*)malloc(sizeof(struct Node));
+    n1=node->right;
+    node->right=n1->left;
+    n1->left=node; 
+    node->height=1+max(height(node->left),height(node->right));
+    n1->height=1+max(height(n1->left),height(n1->right));
+
+    return n1;
+}
 struct Node * leftRightRotation(struct Node *node){
-    printf("LR Rotation Applied. \n");
-    int n=node->left->key;
-    int n1=node->left->right->key;
-    node->left->key=n1;
-    node->left->right->key=n;
-    node->left->left=node->left->right;
-    free(node->left->right);
+    int n=node->key;
+    node->left=rightRightRotation(node->left);
     node=leftLeftRotation(node);
-    
+    printf("LR Rotation on %d is completed. \n",n);
+
+    return node;
+}
+
+struct Node * rightLeftRotation(struct Node * node){
+    int n=node->key;
+    node->right=leftLeftRotation(node->right);
+    node=rightRightRotation(node);
+    printf("RL Rotation on %d is completed. \n",n);
+
     return node;
 }
 
@@ -80,12 +94,19 @@ struct Node* insert(struct Node* node, int key) {
     node->height=1+max(height(node->left),height(node->right));
 
     int balance=Balance(node);
+    printf("Balance factor of %d is %d . \n",node->key,balance);
 
     if(balance>1 && key<node->left->key){
         node=leftLeftRotation(node);
     }
     else if(balance>1 && key>node->left->key){
-         node=leftRightRotation(node);
+        node=leftRightRotation(node);
+    }
+    else if (balance<-1 && key>node->right->key){
+        node=rightRightRotation(node);
+    }
+    else if(balance<-1 && key<node->right->key){
+        node=rightLeftRotation(node);
     }
 
     return node;
@@ -124,6 +145,25 @@ struct Node* deleteNode(struct Node* root, int key) {
         root->key = temp->key;
         root->right = deleteNode(root->right, temp->key);
     }
+
+    root->height=1+max(height(root->left),height(root->right));
+
+    int balance=Balance(root);
+    printf("Balance factor of %d is %d . \n",root->key,balance);
+
+    if(balance>1 && key<root->left->key){
+        root=leftLeftRotation(root);
+    }
+    else if(balance>1 && key>root->left->key){
+        root=leftRightRotation(root);
+    }
+    else if (balance<-1 && key>root->right->key){
+        root=rightRightRotation(root);
+    }
+    else if(balance<-1 && key<root->right->key){
+        root=rightLeftRotation(root);
+    }
+
     return root;
 }
 
